@@ -22,6 +22,10 @@ const int DEVICES_PINS[1] = {
 
 const int DEVICES_SIZE = std::end(DEVICES_PINS) - std::begin(DEVICES_PINS);
 
+const char INDEX_HTML[] PROGMEM = R"rawliteral(
+<!DOCTYPE HTML><html><head> <title>SALA MOZAL</title> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="data:,"> <style>html{font-family: Arial; display: inline-block; text-align: center;}h2{font-size: 3.0rem;}p{font-size: 3.0rem;}body{max-width: 600px; margin: 0px auto; padding-bottom: 25px;}.switch{position: relative; display: inline-block; width: 120px; height: 68px}.switch input{display: none}.slider{position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; border-radius: 6px}.slider:before{position: absolute; content: ""; height: 52px; width: 52px; left: 8px; bottom: 8px; background-color: #fff; -webkit-transition: .4s; transition: .4s; border-radius: 3px}input:checked+.slider{background-color: #0068b3}input:checked+.slider:before{-webkit-transform: translateX(52px); -ms-transform: translateX(52px); transform: translateX(52px)}</style></head><body> <h2>SALA MOZAL</h2> %DEVICES_PLACEHOLDER% <script>function toggleCheckbox(element){var xhr=new XMLHttpRequest(); if (element.checked){xhr.open("GET", "/update?id=" + element.id + "&state=1", true);}else{xhr.open("GET", "/update?id=" + element.id + "&state=0", true);}xhr.send();}</script></body></html>
+)rawliteral";
+
 AsyncWebServer server(80);
 
 void setupWifi();
@@ -36,23 +40,15 @@ String deviceState(int pin);
 
 String requestProcessorCallback(const String &var);
 
-const char index_html[] PROGMEM = R"rawliteral(
-<!DOCTYPE HTML><html><head> <title>SALA MOZAL</title> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="data:,"> <style>html{font-family: Arial; display: inline-block; text-align: center;}h2{font-size: 3.0rem;}p{font-size: 3.0rem;}body{max-width: 600px; margin: 0px auto; padding-bottom: 25px;}.switch{position: relative; display: inline-block; width: 120px; height: 68px}.switch input{display: none}.slider{position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; border-radius: 6px}.slider:before{position: absolute; content: ""; height: 52px; width: 52px; left: 8px; bottom: 8px; background-color: #fff; -webkit-transition: .4s; transition: .4s; border-radius: 3px}input:checked+.slider{background-color: #0068b3}input:checked+.slider:before{-webkit-transform: translateX(52px); -ms-transform: translateX(52px); transform: translateX(52px)}</style></head><body> <h2>SALA MOZAL</h2> %DEVICES_PLACEHOLDER% <script>function toggleCheckbox(element){var xhr=new XMLHttpRequest(); if (element.checked){xhr.open("GET", "/update?id=" + element.id + "&state=1", true);}else{xhr.open("GET", "/update?id=" + element.id + "&state=0", true);}xhr.send();}</script></body></html>
-)rawliteral";
-
 void setup() {
-
     Serial.begin(9600);
-
     pinMode(LED_PIN, OUTPUT);
 
     setupWifi();
     setupServer();
-
 }
 
-void loop() {
-}
+void loop() {}
 
 void setupWifi() {
     Serial.printf("Connecting to WIFI %s.", WIFI_SSID);
@@ -74,7 +70,7 @@ void setupServer() {
 
 void homeRoute() {
     server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-        request->send_P(200, "text/html", index_html, requestProcessorCallback);
+        request->send_P(200, "text/html", INDEX_HTML, requestProcessorCallback);
     });
 }
 
